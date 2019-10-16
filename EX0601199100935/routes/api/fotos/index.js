@@ -28,7 +28,7 @@ fotoCollection.push(
     {},
     fotoStruct,
     {
-      id:100,
+      id:1,
       title:'Fondo',
       url:'aaaaa',
       thumbnailUrl:'aaaa',
@@ -78,17 +78,16 @@ router.post('/new', function(req, res){
 
 router.put('/update/:id',
   function(req, res){
-      var idToModify = req.params.id;
+      var idToModify = parseInt(req.params.id);
       var modFoto = {};
       var newFotoArray = fotoCollection.map(
         function(o,i){
-          if( idToModify === o.id){            
-            modFoto = Object.assign({
-              "title":req.body.title,
-              "url":req.body.url,
-              "thumbnailUrl":req.body.thumbnailUrl,
-              "album":req.body.album
-            }, o);
+          if( idToModify === o.id){  
+
+            modFoto = Object.assign( {},o,{
+              ...req.body///
+            });
+            return modFoto;
           }
           return o;
         }
@@ -106,6 +105,28 @@ router.put('/update/:id',
     );
   }
 );// put :id
+
+router.delete('/delete/:id',
+  function( req, res) {
+    var idToDelete  = parseInt(req.params.id);
+    var newFotoCollection = fotoCollection.filter(
+      function(o, i){
+        return idToDelete !== o.id;
+      }
+    ); //filter
+    fotoCollection = newFotoCollection;
+    fileModel.saveToFile(
+      fotoCollection,
+      function (err, savedSuccesfully) {
+        if (err) {
+          res.status(400).json({ "error": "No se pudo eliminar objeto" });
+        } else {
+          res.json({"newFotosQty": fotoCollection.length});
+        }
+      }
+    );
+  }
+);// delete
 
 
 module.exports = router;
