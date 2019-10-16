@@ -3,7 +3,6 @@ var router = express.Router();
 
 
 //Rutas de cada entidad 
-
 var fotosApiRoutes = require('./fotos/index');
 
 //localhost:3000/api/prd
