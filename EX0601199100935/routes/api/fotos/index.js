@@ -76,5 +76,36 @@ router.post('/new', function(req, res){
    }
 }); // post /new
 
+router.put('/update/:id',
+  function(req, res){
+      var idToModify = req.params.id;
+      var modFoto = {};
+      var newFotoArray = fotoCollection.map(
+        function(o,i){
+          if( idToModify === o.id){            
+            modFoto = Object.assign({
+              "title":req.body.title,
+              "url":req.body.url,
+              "thumbnailUrl":req.body.thumbnailUrl,
+              "album":req.body.album
+            }, o);
+          }
+          return o;
+        }
+      ); // end map
+    fotoCollection = newFotoArray;
+    fileModel.saveToFile(
+      fotoCollection,
+      function (err, savedSuccesfully) {
+        if (err) {
+          res.status(400).json({ "error": "No se pudo actualizar objeto" });
+        } else {
+          res.json(modFoto);  // req.body ===  $_POST[]
+        }
+      }
+    );
+  }
+);// put :id
+
 
 module.exports = router;
